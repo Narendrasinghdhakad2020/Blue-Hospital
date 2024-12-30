@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: patient
+
+  data:
+    mongodb:
+      uri: mongodb+srv://singhdhakad2023:cWNeilwoQHYnJvmc@cluster0.blaph.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      database: BlueHospital
+      ssl:
+        enable: true
+      auto-index-creation: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: singhdhakad2023@gmail.com
+    password: pbql wgot zpny eovq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
