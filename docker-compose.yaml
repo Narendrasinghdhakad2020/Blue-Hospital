@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  patient-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      # Correct local MongoDB connection string
+      - SPRING_DATA_MONGODB_URI=mongodb://singhdhakad2023:cWNeilwoQHYnJvmc@mongodb:27017/BlueHospital
+      - SPRING_DATA_MONGODB_SSL_ENABLED=false
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=singhdhakad2023@gmail.com
+      - MAIL_PASSWORD=pbqlwgotzpnyeovq
+      - MAIL_SMTP_AUTH=true
+      - MAIL_SMTP_STARTTLS_ENABLE=true
+      - SPRINGDOC_SWAGGER_UI_PATH=/doc
+    depends_on:
+      - mongodb
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongo_cloud
+    ports:
+      - "27025:27017" # Exposing MongoDB's default port 27017 to 27025 on the host
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=singhdhakad2023
+      - MONGO_INITDB_ROOT_PASSWORD=cWNeilwoQHYnJvmc
+      - MONGO_INITDB_DATABASE=BlueHospital
+      - MONGO_INITDB_AUTO_INDEX_CREATION=true
