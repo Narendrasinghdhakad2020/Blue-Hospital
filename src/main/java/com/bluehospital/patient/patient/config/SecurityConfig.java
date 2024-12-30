@@ -50,7 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/v1/public/patient/**").permitAll()
                         .requestMatchers("/api/v1/private/patient/**").hasAuthority("PATIENT")
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(basic->{})
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);

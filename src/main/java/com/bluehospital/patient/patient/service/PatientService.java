@@ -78,7 +78,8 @@ public class PatientService {
         query.addCriteria(Criteria.where("username").is(username));
 
         Update update = new Update();
-        update.set("isVerified",isVerified);
+        update.set("isVerified",isVerified);//updating the isVerified field of patient
+        update.set("verificationCode",null);
 
         mongoTemplate.updateFirst(query,update,Patient.class);
 
