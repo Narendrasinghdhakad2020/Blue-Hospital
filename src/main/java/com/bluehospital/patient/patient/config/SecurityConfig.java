@@ -2,10 +2,8 @@ package com.bluehospital.patient.patient.config;
 
 import com.bluehospital.patient.patient.filter.JwtFilter;
 import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.repository.PatientRepository;
-import com.bluehospital.patient.patient.service.PatientService;
+import com.bluehospital.patient.patient.service.PatientServiceImp;
 import com.bluehospital.patient.patient.utils.JwtUtils;
-import jakarta.servlet.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,10 +22,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final PatientService patientService;
+    private final PatientServiceImp patientService;
     private final JwtUtils jwtUtils;
 
-    public SecurityConfig(PatientService patientService,JwtUtils jwtUtils){
+    public SecurityConfig(PatientServiceImp patientService, JwtUtils jwtUtils){
         this.patientService=patientService;
         this.jwtUtils=jwtUtils;
 
@@ -50,6 +48,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/v1/public/patient/**").permitAll()
                         .requestMatchers("/api/v1/private/patient/**").hasAuthority("PATIENT")
+                        .requestMatchers("/doc").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -71,7 +70,7 @@ public class SecurityConfig {
         return username->{
             Patient patient= patientService.loadPatientByUsername(username);
             if(patient==null){
-                throw new UsernameNotFoundException("User not found! "+username);
+                throw new UsernameNotFoundException("Patient not found! "+username);
             }
             return patient;
         };

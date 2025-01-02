@@ -3,6 +3,8 @@ package com.bluehospital.patient.patient.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
@@ -11,6 +13,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {//it generates and validate the token
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     //generating the secure secrete key
     private static String SecretKeyGenerator(){
@@ -21,7 +25,7 @@ public class JwtUtils {//it generates and validate the token
         //Encode the byte array to base64 string
         String base64= Base64.getEncoder().encodeToString(key);
 
-        System.out.println("Generated secretkey is: "+base64);
+        logger.info("Generated secretkey is: "+base64);
 
         return base64;
     }
@@ -43,7 +47,7 @@ public class JwtUtils {//it generates and validate the token
 
     //method to validate token
     public boolean validateToken(String token,String username){
-        System.out.println("JwtUtils: validating the token");
+        logger.info("JwtUtils: validating the token");
         String tokenUsername=extractUsername(token);
         return (tokenUsername.equals(username) && !isTokenExpired(token));
 
@@ -51,23 +55,23 @@ public class JwtUtils {//it generates and validate the token
 
     //method to extract username from token
     public String extractUsername(String token){
-        System.out.println("JwtUtils: extracting username from token");
+        logger.info("JwtUtils: extracting username from token");
         Claims claims=Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
-        System.out.println("Token username= "+claims.getSubject());
+        logger.info("Token username= "+claims.getSubject());
         return claims.getSubject();
     }
 
     //method to check token expiry
     public boolean isTokenExpired(String token){
-        System.out.println("JwtUtils: checking token expiry");
+        logger.info("JwtUtils: checking token expiry");
         return extractExpiration(token).before(new Date());
     }
 
     //method to extract token expiration date
     public Date extractExpiration(String token){
-        System.out.println("JwtUtils: extracting the expiration date of token");
+        logger.info("JwtUtils: extracting the expiration date of token");
         Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
-        System.out.println("Token expiration Date= "+claims.getExpiration());
+        logger.info("Token expiration Date= "+claims.getExpiration());
         return claims.getExpiration();
     }
 

@@ -1,9 +1,12 @@
 package com.bluehospital.patient.patient.controller.Public;
 
+import com.bluehospital.patient.patient.dto.ApiResponse;
 import com.bluehospital.patient.patient.dto.SignupRequest;
 import com.bluehospital.patient.patient.model.Patient;
 import com.bluehospital.patient.patient.service.PatientService;
-import org.apache.coyote.Response;
+import com.bluehospital.patient.patient.service.PatientServiceImp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +21,8 @@ import java.util.Date;
 @RequestMapping("/api/v1/public/patient")
 public class Signup {
 
+    private static final Logger logger = LoggerFactory.getLogger(Signup.class);
+
     private final PatientService patientService;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,8 +33,8 @@ public class Signup {
 
     @PostMapping("/signup")
     public ResponseEntity<?> addPatient(@RequestBody SignupRequest request){
-        try{
-            System.out.println("Signup-Controller: adding new patient to DB!");
+
+            logger.info("Signup-Controller: adding new patient to DB!");
             boolean isPatientExist=patientService.isPatientExistByUsername(request.getUsername());//To check patient already exist
             Patient newPatient=new Patient();
             if(!isPatientExist){
@@ -41,21 +46,27 @@ public class Signup {
                 newPatient.setPhone(request.getPhone());
                 newPatient.setCreatedAt(new Date());
                 patientService.savePatient(newPatient);
-                System.out.println("Signup-Controller: Patient Successfully saved to DB!");
-                return new ResponseEntity<>(newPatient,HttpStatus.OK);
+                logger.info("Signup-Controller: Patient Successfully saved to DB!");
+                ApiResponse<Patient> response = new ApiResponse<>(
+                        HttpStatus.OK.value(),
+                        "Patient Successfully registerd",
+                        "/api/v1/public/patient/signup",
+                        newPatient
+                );
+                return new ResponseEntity<>(response,HttpStatus.OK);
             }
             else{
-                System.out.println("User already exist");
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                logger.info("User already exist");
+                ApiResponse<String> response = new ApiResponse<>(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Patient Already Exist!",
+                        "api/v1/public/patient/signup",
+                        ""
+                );
+                return new ResponseEntity<>( response,HttpStatus.BAD_REQUEST);
 
             }
 
-        }catch(Exception e){
-            System.out.println("Error during Signup");
-            System.out.println("Error: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-    }
 
 }

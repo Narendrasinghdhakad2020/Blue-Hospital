@@ -7,11 +7,13 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PatientRepository extends MongoRepository<Patient,ObjectId> {
 
-    public Patient findPatientByUsername(String username);
-    public Patient findPatientById(ObjectId id);
+    public  Optional<Patient> findPatientByUsername(String user);
+    public Optional<Patient> findPatientById(ObjectId id);
     public boolean existsPatientByUsername(String username);
     public boolean existsPatientById(ObjectId id);
 

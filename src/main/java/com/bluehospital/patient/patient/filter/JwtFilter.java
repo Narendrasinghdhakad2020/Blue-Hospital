@@ -1,12 +1,14 @@
 package com.bluehospital.patient.patient.filter;
 
 import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.service.PatientService;
+import com.bluehospital.patient.patient.service.PatientServiceImp;
 import com.bluehospital.patient.patient.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -18,10 +20,12 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    public final JwtUtils jwtUtils;
-    private final PatientService patientService;
+    private static final Logger logger= LoggerFactory.getLogger(JwtFilter.class);
 
-    public JwtFilter(JwtUtils jwtUtils,PatientService patientService){
+    public final JwtUtils jwtUtils;
+    private final PatientServiceImp patientService;
+
+    public JwtFilter(JwtUtils jwtUtils, PatientServiceImp patientService){
         this.jwtUtils=jwtUtils;
         this.patientService=patientService;
     }
@@ -34,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String username=null;
         String token=null;
 
-        System.out.println("Hello we are in JwtFilter! ");
+        logger.info("Hello we are in JwtFilter! ");
 
          //check authorization header contains the bearer token
         if(authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
@@ -44,17 +48,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
         //validating the token and set security context
         if(username!=null && SecurityContextHolder.getContext().getAuthentication() ==null){
-            System.out.println("JwtFilter: validating the token");
+            logger.info("JwtFilter: validating the token");
             Patient patient=patientService.loadPatientByUsername(username);
 
             if(jwtUtils.validateToken(token,patient.getUsername())){
-                System.out.println("JwtFilter: Successfully verified token");
+               logger.info("JwtFilter: Successfully verified token");
                 UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(patient,null,patient.getAuthorities());
-                System.out.println("JwtFilter: Auth Token ="+authToken);
+                logger.info("JwtFilter: Auth Token successfully authenticated");
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);//set user authentication in security context
-                System.out.println("JwtFilter: Successfully added the authentication in Security Context!");
+                logger.info("JwtFilter: Successfully added the authentication in Security Context!");
             }
 
         }
