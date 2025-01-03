@@ -67,6 +67,15 @@ public class Login {
                             try{
 
                             emailService.sendVerificationEmail(patient.getUsername(), code);
+                            //sending email response to the server that email has successfully sended
+
+                                ApiResponse<Map<String,String>> response= new ApiResponse<>(
+                                        HttpStatus.NO_CONTENT.value(),
+                                        "Redirecting to Verify page",
+                                        "/api/v1/public/patient/login",
+                                        null
+                                );
+                                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
                             }catch (Exception ex){
                                 logger.error("Error in sending email");
                                 ApiResponse<Map<String,String>> response= new ApiResponse<>(
@@ -77,14 +86,6 @@ public class Login {
                                 );
                                 return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
                             }
-
-                        ApiResponse<Map<String,String>> response= new ApiResponse<>(
-                                HttpStatus.NO_CONTENT.value(),
-                                "Redirecting to Verify page",
-                                "/api/v1/public/patient/login",
-                                null
-                        );
-                        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
                     }
 
                     //creating a response for login request
@@ -125,6 +126,7 @@ public class Login {
     }
 
     //making controller to refresh token
+    @PostMapping("refresh-token")
     public ResponseEntity<ApiResponse<Map<String,String>>> refreshAccessToken(@RequestBody Map<String,String> request){
         String refreshToken=request.get("refreshToken");
         try {
@@ -146,7 +148,7 @@ public class Login {
     //making controller for verifying email
     @PostMapping("/verify")
     @Transactional
-    public ResponseEntity<ApiResponse<String>> verifyPatientEmail(@RequestBody VerificationRequest request){
+    public ResponseEntity<ApiResponse<Map<String,String>>> verifyPatientEmail(@RequestBody VerificationRequest request){
 
         try{
             Patient patient=patientService.loadPatientByUsername(request.getUsername());
@@ -154,15 +156,19 @@ public class Login {
                 logger.info("Code is: " + patient.getVerificationCode());
                 if ( patient.getVerificationCode().equals(request.getVerificationCode())) {
                     patientService.updateEmailVerificationStatus(request.getUsername(), true);
-                    ApiResponse<String > response = new ApiResponse<>(
+                    //creating map to store access and refresh token
+                    Map<String,String> tokens=new HashMap<>();
+                    tokens.put("accessToken",accessToken);
+                    tokens.put("refreshToken",refreshToken);
+                    ApiResponse<Map<String,String>> response = new ApiResponse<>(
                             HttpStatus.OK.value(),
                             "Email Successfully verified!",
                             "/api/v1/public/patient/verify",
-                            accessToken
+                            tokens
                     );
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
-                ApiResponse<String> response = new ApiResponse<>(
+                ApiResponse<Map<String,String>> response = new ApiResponse<>(
                         HttpStatus.UNAUTHORIZED.value(),
                         "Invalid Verification Code",
                         "/api/v1/public/patient/verify",
@@ -171,7 +177,7 @@ public class Login {
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
             else{
-                ApiResponse<String > response = new ApiResponse<>(
+                ApiResponse<Map<String,String> > response = new ApiResponse<>(
                 HttpStatus.UNAUTHORIZED.value(),
                         "Invalid Email enter the same as entered on login page",
                         "/api/v1/public/patient/verify",
@@ -182,7 +188,7 @@ public class Login {
 
         }catch (Exception e){
             logger.info("Error in verifying email"+e.getMessage());
-            ApiResponse<String > response = new ApiResponse<>(
+            ApiResponse<Map<String,String> > response = new ApiResponse<>(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "Internal Error in verify email",
                     "/api/v1/public/patient/verify",
