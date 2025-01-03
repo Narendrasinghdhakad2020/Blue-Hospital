@@ -31,15 +31,28 @@ public class JwtUtils {//it generates and validate the token
     }
 
     private final String SECRET_KEY=SecretKeyGenerator();//secret key for jwt generation
-    private final Long TOKEN_VALIDITY=5*60*1000l;//5min validity
+    private final Long ACCESS_TOKEN_VALIDITY=5*60*1000l;//5min validity
+    private final Long REFRESH_TOKEN_VALIDITY=30*60*1000l; //30 min validity
 
-    //method to generate JWT Token
-    public String generateToken(String username){
+    //method to generate Access JWT Token
+    public String generateAccessToken(String username){
 
         return Jwts.builder()
                 .setSubject(username)//setting patient info in jwt payload
-                .setIssuedAt(new Date())//issued data for token
-                .setExpiration(new Date(System.currentTimeMillis()+TOKEN_VALIDITY))//expiry data for token is 5 min
+                .setIssuedAt(new Date())//issued date for access token
+                .setExpiration(new Date(System.currentTimeMillis()+ACCESS_TOKEN_VALIDITY))//expiry data for token is 5 min
+                .signWith(SignatureAlgorithm.HS256,SECRET_KEY) //signing algorithm for jwt creation
+                .compact(); //builds and return a string
+
+    }
+
+    //method to generate Refresh JWT Token
+    public String generateRefreshToken(String username){
+
+        return Jwts.builder()
+                .setSubject(username)//setting patient info in jwt payload
+                .setIssuedAt(new Date())//issued date for refresh token
+                .setExpiration(new Date(System.currentTimeMillis()+REFRESH_TOKEN_VALIDITY))//expiry data for refresh token is 30 min
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY) //signing algorithm for jwt creation
                 .compact(); //builds and return a string
 
