@@ -3,6 +3,7 @@ package com.bluehospital.patient.patient.config;
 import com.bluehospital.patient.patient.filter.JwtFilter;
 import com.bluehospital.patient.patient.model.Patient;
 import com.bluehospital.patient.patient.service.PatientServiceImp;
+import com.bluehospital.patient.patient.service.TokenBlacklistService;
 import com.bluehospital.patient.patient.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,16 +25,18 @@ public class SecurityConfig {
 
     private final PatientServiceImp patientService;
     private final JwtUtils jwtUtils;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public SecurityConfig(PatientServiceImp patientService, JwtUtils jwtUtils){
+    public SecurityConfig(PatientServiceImp patientService, JwtUtils jwtUtils,TokenBlacklistService tokenBlacklistService){
         this.patientService=patientService;
         this.jwtUtils=jwtUtils;
+        this.tokenBlacklistService=tokenBlacklistService;
 
     }
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtUtils,patientService);
+        return new JwtFilter(jwtUtils,patientService,tokenBlacklistService);
     }
 
     @Bean

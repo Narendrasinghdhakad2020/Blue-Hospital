@@ -39,6 +39,8 @@ public class JwtUtils {//it generates and validate the token
 
         return Jwts.builder()
                 .setSubject(username)//setting patient info in jwt payload
+                .claim("type","accessToken")
+                .claim("scope","read write")
                 .setIssuedAt(new Date())//issued date for access token
                 .setExpiration(new Date(System.currentTimeMillis()+ACCESS_TOKEN_VALIDITY))//expiry data for token is 5 min
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY) //signing algorithm for jwt creation
@@ -46,11 +48,24 @@ public class JwtUtils {//it generates and validate the token
 
     }
 
+    //method to check whether the given token is access or refresh
+    public boolean isAccessToken(String token){
+        try{
+            Claims claims= Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
+            String type=claims.get("type",String.class);
+            return "accessToken".equals(type) && !isTokenExpired(token);
+        }catch (Exception ex){
+            logger.error("Error during verify the token whether it is access or refresh"+ex.getMessage());
+            return false;
+        }
+    }
+
     //method to generate Refresh JWT Token
     public String generateRefreshToken(String username){
 
         return Jwts.builder()
                 .setSubject(username)//setting patient info in jwt payload
+                .claim("type","refreshToken")
                 .setIssuedAt(new Date())//issued date for refresh token
                 .setExpiration(new Date(System.currentTimeMillis()+REFRESH_TOKEN_VALIDITY))//expiry data for refresh token is 30 min
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY) //signing algorithm for jwt creation

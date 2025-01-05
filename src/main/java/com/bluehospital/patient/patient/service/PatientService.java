@@ -18,6 +18,7 @@ public interface PatientService {
     boolean isPatientExistsById(ObjectId id);
     String authLoginCredentialAndGenerateAccessToken(LoginRequest request, AuthenticationManager authenticationManager);
     String generateRefreshToken(String username);
-    ResponseEntity<ApiResponse<Map<String,String>>> validateRefreshTokenAndGenerateNewAccessToken(String refreshToken);
+    ApiResponse<Map<String,String>> validateRefreshTokenAndGenerateNewAccessToken(String refreshToken,String accessToken);
     void updateEmailVerificationStatus(String username,boolean isVerified);
+    public boolean logoutPatient(String accessToken,String refreshToken);//to logout patient and blacklist the access token
 }

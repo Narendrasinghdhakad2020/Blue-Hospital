@@ -30,13 +30,15 @@ public class PatientServiceImp implements PatientService {
     private final PatientRepository patientRepository;
     private final JwtUtils jwtUtils;
     private final MongoTemplate mongoTemplate;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
     //constructor injection
-    public PatientServiceImp(PatientRepository patientRepository, JwtUtils jwtUtils, MongoTemplate mongoTemplate){
+    public PatientServiceImp(PatientRepository patientRepository, JwtUtils jwtUtils, MongoTemplate mongoTemplate,TokenBlacklistService tokenBlacklistService){
         this.patientRepository=patientRepository;
         this.jwtUtils=jwtUtils;
         this.mongoTemplate=mongoTemplate;
+        this.tokenBlacklistService=tokenBlacklistService;
     }
 
     //loading patient from database using patient email/username
@@ -96,42 +98,48 @@ public class PatientServiceImp implements PatientService {
     }
 
     //method to generate refresh token
+    @Override
     public String generateRefreshToken(String username){
         logger.info("Patient-Service: Generating refresh token for the patient!");
         return jwtUtils.generateRefreshToken(username);
     }
 
     //method to validate refresh token and generate new access token
-    public ResponseEntity<ApiResponse<Map<String,String>>> validateRefreshTokenAndGenerateNewAccessToken(String refreshToken){
+    @Override
+    public ApiResponse<Map<String,String>> validateRefreshTokenAndGenerateNewAccessToken(String refreshToken,String accessToken){
         String username=jwtUtils.extractUsername(refreshToken);
         if(jwtUtils.validateToken(refreshToken,username)){
+
             String newAccessToken= jwtUtils.generateAccessToken(username);//NEW ACCESS TOKEN
-            String newRefreshToken= jwtUtils.generateRefreshToken(username); // NEW REFRESH TOKEN
 
             Map<String,String> tokens= new HashMap<>();
             tokens.put("accessToken",newAccessToken);
-            tokens.put("refreshToken",newRefreshToken);
+            tokens.put("refreshToken",refreshToken);
+
+            //Now blacklist the old access token
+            tokenBlacklistService.blacklistToken(accessToken,jwtUtils.extractExpiration(refreshToken).getTime());
+
 
             //api response
-            ApiResponse<Map<String, String>> response = new ApiResponse<>(
+            return new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Access token refreshed successfully",
                     "/api/v1/public/patient/refresh-token",
                     tokens
             );
 
-            return new ResponseEntity<>(response,HttpStatus.OK);
-
 
         }
         else{
-            ApiResponse<Map<String, String>> response = new ApiResponse<>(
+
+            return new  ApiResponse<>(
                     HttpStatus.UNAUTHORIZED.value(),
                     "Invalid or expired refresh token",
                     "/api/v1/public/patient/refresh-token",
                     null
             );
-            return new ResponseEntity<>(response,HttpStatus.UNAUTHORIZED);
+
+
         }
     }
 
@@ -148,8 +156,15 @@ public class PatientServiceImp implements PatientService {
 
         mongoTemplate.updateFirst(query,update,Patient.class);
 
+    }
 
-
+    @Override
+    public boolean logoutPatient(String accessToken,String refreshToken){
+        System.out.println("Hello we are here in patient service");
+        Long refreshTokenExpiry=jwtUtils.extractExpiration(refreshToken).getTime();
+        //Now blacklist the access token
+        tokenBlacklistService.blacklistToken(accessToken,refreshTokenExpiry);
+        return true;
     }
 
 

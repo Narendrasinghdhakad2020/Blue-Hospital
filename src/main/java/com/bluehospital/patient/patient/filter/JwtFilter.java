@@ -2,6 +2,7 @@ package com.bluehospital.patient.patient.filter;
 
 import com.bluehospital.patient.patient.model.Patient;
 import com.bluehospital.patient.patient.service.PatientServiceImp;
+import com.bluehospital.patient.patient.service.TokenBlacklistService;
 import com.bluehospital.patient.patient.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,10 +25,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     public final JwtUtils jwtUtils;
     private final PatientServiceImp patientService;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public JwtFilter(JwtUtils jwtUtils, PatientServiceImp patientService){
+    public JwtFilter(JwtUtils jwtUtils, PatientServiceImp patientService, TokenBlacklistService tokenBlacklistService){
         this.jwtUtils=jwtUtils;
         this.patientService=patientService;
+        this.tokenBlacklistService=tokenBlacklistService;
     }
 
 
@@ -43,6 +46,11 @@ public class JwtFilter extends OncePerRequestFilter {
          //check authorization header contains the bearer token
         if(authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
             token=authorizationHeader.substring(7);//setting the token of request to the token variable and removing the prefix Bearer from token
+            if(!jwtUtils.isAccessToken(token) || tokenBlacklistService.isTokenBlacklisted(token)){ // to check the user is not trying to access using refresh token
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Unauthorized: Invalid, expired or blacklisted access token");
+                return;
+            }
             username=jwtUtils.extractUsername(token);
         }
 

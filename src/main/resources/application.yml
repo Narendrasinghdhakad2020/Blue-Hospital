@@ -2,6 +2,10 @@ spring:
   application:
     name: patient
 
+  redis:
+    host: localhost
+    port: 6379
+
   data:
     mongodb:
       uri: mongodb+srv://singhdhakad2023:cWNeilwoQHYnJvmc@cluster0.blaph.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
