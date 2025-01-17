@@ -1,6 +1,6 @@
 package com.bluehospital.patient.patient.exception;
 
-import com.bluehospital.patient.patient.dto.ApiResponse;
+import com.bluehospital.patient.patient.dto.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

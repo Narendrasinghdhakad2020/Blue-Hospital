@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8085:8080"
+      - "8085:8081"
     environment:
       # Correct local MongoDB connection string
       - SPRING_DATA_MONGODB_URI=mongodb://singhdhakad2023:cWNeilwoQHYnJvmc@mongodb:27017/BlueHospital
@@ -18,8 +18,12 @@ services:
       - MAIL_SMTP_AUTH=true
       - MAIL_SMTP_STARTTLS_ENABLE=true
       - SPRINGDOC_SWAGGER_UI_PATH=/doc
+      - SPRING_REDIS_HOST=red-ctufgptumphs73en6hq0
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_SSL=true
     depends_on:
       - mongodb
+      - redis
     restart: always
 
   mongodb:
@@ -32,3 +36,9 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=cWNeilwoQHYnJvmc
       - MONGO_INITDB_DATABASE=BlueHospital
       - MONGO_INITDB_AUTO_INDEX_CREATION=true
+
+  redis:
+    image: redis:6.2.14
+    container_name: redis_container
+    ports:
+      - "6379:6379"

@@ -1,4 +1,4 @@
-package com.bluehospital.patient.patient.dto;
+package com.bluehospital.patient.patient.dto.common;
 
 public class VerificationRequest {
 

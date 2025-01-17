@@ -1,11 +1,10 @@
-package com.bluehospital.patient.patient.service;
+package com.bluehospital.patient.patient.service.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.time.Duration;
 
 @Service

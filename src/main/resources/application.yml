@@ -3,8 +3,10 @@ spring:
     name: patient
 
   redis:
+#    host: red-ctufgptumphs73en6hq0
     host: localhost
     port: 6379
+    ssl: false
 
   data:
     mongodb:
@@ -27,7 +29,7 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: 8081
 
 springdoc:
   swagger-ui:

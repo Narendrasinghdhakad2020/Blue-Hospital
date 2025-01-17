@@ -1,8 +1,12 @@
 package com.bluehospital.patient.patient.filter;
 
-import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.service.PatientServiceImp;
-import com.bluehospital.patient.patient.service.TokenBlacklistService;
+import com.bluehospital.patient.patient.model.patient.Patient;
+import com.bluehospital.patient.patient.model.hospital.Hospital;
+import com.bluehospital.patient.patient.service.hospital.HospitalService;
+import com.bluehospital.patient.patient.service.patient.PatientService;
+import com.bluehospital.patient.patient.service.patient.PatientServiceImp;
+import com.bluehospital.patient.patient.service.hospital.HospitalServiceImp;
+import com.bluehospital.patient.patient.service.common.TokenBlacklistService;
 import com.bluehospital.patient.patient.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,55 +25,70 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private static final Logger logger= LoggerFactory.getLogger(JwtFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
-    public final JwtUtils jwtUtils;
-    private final PatientServiceImp patientService;
+    private final JwtUtils jwtUtils;
+    private final PatientService patientService;
+    private final HospitalService hospitalService;
     private final TokenBlacklistService tokenBlacklistService;
 
-    public JwtFilter(JwtUtils jwtUtils, PatientServiceImp patientService, TokenBlacklistService tokenBlacklistService){
-        this.jwtUtils=jwtUtils;
-        this.patientService=patientService;
-        this.tokenBlacklistService=tokenBlacklistService;
+    public JwtFilter(JwtUtils jwtUtils, PatientService patientService, HospitalService hospitalService, TokenBlacklistService tokenBlacklistService) {
+        this.jwtUtils = jwtUtils;
+        this.patientService = patientService;
+        this.hospitalService = hospitalService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException{
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
 
-        String authorizationHeader=request.getHeader("Authorization");//get authorizarion header
-        String username=null;
-        String token=null;
+        String authorizationHeader = request.getHeader("Authorization");
+        String username = null;
+        String token = null;
 
-        logger.info("Hello we are in JwtFilter! ");
+        logger.info("JwtFilter: Starting token validation");
 
-         //check authorization header contains the bearer token
-        if(authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")){
-            token=authorizationHeader.substring(7);//setting the token of request to the token variable and removing the prefix Bearer from token
-            if(!jwtUtils.isAccessToken(token) || tokenBlacklistService.isTokenBlacklisted(token)){ // to check the user is not trying to access using refresh token
+        // Check if the authorization header contains a Bearer token
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Extract token by removing "Bearer " prefix
+            if (!jwtUtils.isAccessToken(token) || tokenBlacklistService.isTokenBlacklisted(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Unauthorized: Invalid, expired or blacklisted access token");
+                response.getWriter().write("Unauthorized: Invalid, expired, or blacklisted access token");
                 return;
             }
-            username=jwtUtils.extractUsername(token);
+            username = jwtUtils.extractUsername(token);
         }
 
-        //validating the token and set security context
-        if(username!=null && SecurityContextHolder.getContext().getAuthentication() ==null){
-            logger.info("JwtFilter: validating the token");
-            Patient patient=patientService.loadPatientByUsername(username);
+        // Validate token and set the security context
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            logger.info("JwtFilter: Validating the token for user {}", username);
 
-            if(jwtUtils.validateToken(token,patient.getUsername())){
-               logger.info("JwtFilter: Successfully verified token");
-                UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(patient,null,patient.getAuthorities());
-                logger.info("JwtFilter: Auth Token successfully authenticated");
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);//set user authentication in security context
-                logger.info("JwtFilter: Successfully added the authentication in Security Context!");
+            // Attempt to authenticate as a Patient
+            Patient patient = patientService.loadPatientByUsername(username);
+            if (patient != null && jwtUtils.validateToken(token, patient.getUsername())) {
+                logger.info("JwtFilter: Valid token for patient");
+                setAuthenticationContext(patient, request);
+            } else {
+                // Attempt to authenticate as a Hospital
+                Hospital hospital = hospitalService.loadHospitalByUsername(username);
+                if (hospital != null && jwtUtils.validateToken(token, hospital.getUsername())) {
+                    logger.info("JwtFilter: Valid token for hospital");
+                    setAuthenticationContext(hospital, request);
+                } else {
+                    logger.warn("JwtFilter: Token validation failed for user {}", username);
+                }
             }
-
         }
-        chain.doFilter(request,response); // continue the filter chain for every request
+
+        chain.doFilter(request, response); // Continue the filter chain
+    }
+
+    private void setAuthenticationContext(Object user, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                user, null, ((org.springframework.security.core.userdetails.UserDetails) user).getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        logger.info("JwtFilter: Successfully added authentication to the security context");
     }
 }

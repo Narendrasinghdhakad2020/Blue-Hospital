@@ -1,11 +1,11 @@
-package com.bluehospital.patient.patient.service;
+package com.bluehospital.patient.patient.service.patient;
 
-import com.bluehospital.patient.patient.dto.ApiResponse;
-import com.bluehospital.patient.patient.dto.LoginRequest;
-import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.repository.PatientRepository;
+import com.bluehospital.patient.patient.dto.common.ApiResponse;
+import com.bluehospital.patient.patient.dto.common.LoginRequest;
+import com.bluehospital.patient.patient.model.patient.Patient;
+import com.bluehospital.patient.patient.repository.patient.PatientRepository;
+import com.bluehospital.patient.patient.service.common.TokenBlacklistService;
 import com.bluehospital.patient.patient.utils.JwtUtils;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -94,7 +93,13 @@ public class PatientServiceImp implements PatientService {
         logger.info("Patient-Service: Successfully authenticated! the requested patient");
         Patient patient=patientRepository.findPatientByUsername(request.getUsername()).orElse(null);
 
+        if(!patient.getUsername().isEmpty()){
+
         return jwtUtils.generateAccessToken(patient.getUsername());
+        }
+        else {
+            return "Error in generating token to request patient because the username for given patient is Null";
+        }
     }
 
     //method to generate refresh token
@@ -158,6 +163,7 @@ public class PatientServiceImp implements PatientService {
 
     }
 
+    //method to logout patient
     @Override
     public boolean logoutPatient(String accessToken,String refreshToken){
         System.out.println("Hello we are here in patient service");

@@ -1,9 +1,12 @@
 package com.bluehospital.patient.patient.config;
 
 import com.bluehospital.patient.patient.filter.JwtFilter;
-import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.service.PatientServiceImp;
-import com.bluehospital.patient.patient.service.TokenBlacklistService;
+import com.bluehospital.patient.patient.model.hospital.Hospital;
+import com.bluehospital.patient.patient.model.patient.Patient;
+import com.bluehospital.patient.patient.service.hospital.HospitalService;
+import com.bluehospital.patient.patient.service.hospital.HospitalServiceImp;
+import com.bluehospital.patient.patient.service.patient.PatientServiceImp;
+import com.bluehospital.patient.patient.service.common.TokenBlacklistService;
 import com.bluehospital.patient.patient.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,19 +27,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final PatientServiceImp patientService;
+    private final HospitalService hospitalService;
     private final JwtUtils jwtUtils;
     private final TokenBlacklistService tokenBlacklistService;
 
-    public SecurityConfig(PatientServiceImp patientService, JwtUtils jwtUtils,TokenBlacklistService tokenBlacklistService){
+    public SecurityConfig(PatientServiceImp patientService, JwtUtils jwtUtils,TokenBlacklistService tokenBlacklistService,HospitalService hospitalService){
         this.patientService=patientService;
         this.jwtUtils=jwtUtils;
         this.tokenBlacklistService=tokenBlacklistService;
+        this.hospitalService=hospitalService;
 
     }
 
     @Bean
     public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtUtils,patientService,tokenBlacklistService);
+        return new JwtFilter(jwtUtils,patientService,hospitalService,tokenBlacklistService);
     }
 
     @Bean
@@ -49,8 +54,9 @@ public class SecurityConfig {
         http
                 .csrf(customeCsrf->customeCsrf.disable())
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/api/v1/public/patient/**").permitAll()
+                        .requestMatchers("/api/v1/public/**").permitAll()
                         .requestMatchers("/api/v1/private/patient/**").hasAuthority("PATIENT")
+                        .requestMatchers("/api/v1/private/hospital/**").hasAuthority("HOSPITAL")
                         .requestMatchers("/doc").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -71,11 +77,20 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(){
         return username->{
-            Patient patient= patientService.loadPatientByUsername(username);
-            if(patient==null){
-                throw new UsernameNotFoundException("Patient not found! "+username);
+            // Try fetching a Patient
+            Patient patient = patientService.loadPatientByUsername(username);
+            if (patient != null) {
+                return patient;
             }
-            return patient;
+
+            // Try fetching a Hospital
+            Hospital hospital = hospitalService.loadHospitalByUsername(username);
+            if (hospital != null) {
+                return hospital;
+            }
+
+            // If neither is found, throw an exception
+            throw new UsernameNotFoundException("User not found: " + username);
         };
     }
 }

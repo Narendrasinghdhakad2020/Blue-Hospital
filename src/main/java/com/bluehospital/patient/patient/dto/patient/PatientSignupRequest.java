@@ -1,6 +1,6 @@
-package com.bluehospital.patient.patient.dto;
+package com.bluehospital.patient.patient.dto.patient;
 
-public class SignupRequest {
+public class PatientSignupRequest {
 
     private String name;
     private String username;

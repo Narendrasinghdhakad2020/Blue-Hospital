@@ -1,13 +1,13 @@
-package com.bluehospital.patient.patient.controller.Public;
+package com.bluehospital.patient.patient.controller.patient.Public;
 
-import com.bluehospital.patient.patient.dto.ApiResponse;
-import com.bluehospital.patient.patient.dto.LoginRequest;
-import com.bluehospital.patient.patient.dto.SignupRequest;
-import com.bluehospital.patient.patient.dto.VerificationRequest;
-import com.bluehospital.patient.patient.model.Patient;
-import com.bluehospital.patient.patient.service.EmailService;
-import com.bluehospital.patient.patient.service.PatientService;
-import com.bluehospital.patient.patient.service.TokenBlacklistService;
+import com.bluehospital.patient.patient.dto.common.ApiResponse;
+import com.bluehospital.patient.patient.dto.common.LoginRequest;
+import com.bluehospital.patient.patient.dto.patient.PatientSignupRequest;
+import com.bluehospital.patient.patient.dto.common.VerificationRequest;
+import com.bluehospital.patient.patient.model.patient.Patient;
+import com.bluehospital.patient.patient.service.common.EmailService;
+import com.bluehospital.patient.patient.service.patient.PatientService;
+import com.bluehospital.patient.patient.service.common.TokenBlacklistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,9 +24,9 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/public/patient")
-public class Auth {
+public class PatientAuth {
 
-    private static final Logger logger = LoggerFactory.getLogger(Auth.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientAuth.class);
 
     private final AuthenticationManager authenticationManager;
     private final PatientService patientService;
@@ -37,7 +37,7 @@ public class Auth {
     private static String accessToken;
     private static String refreshToken;
 
-    public Auth(AuthenticationManager authenticationManager, PatientService patientService, EmailService emailService, TokenBlacklistService tokenBlacklistService, PasswordEncoder passwordEncoder
+    public PatientAuth(AuthenticationManager authenticationManager, PatientService patientService, EmailService emailService, TokenBlacklistService tokenBlacklistService, PasswordEncoder passwordEncoder
     ){
         this.authenticationManager=authenticationManager;
         this.patientService=patientService;
@@ -53,7 +53,7 @@ public class Auth {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> addPatient(@RequestBody SignupRequest request){
+    public ResponseEntity<?> addPatient(@RequestBody PatientSignupRequest request){
 
         logger.info("Signup-Controller: adding new patient to DB!");
         boolean isPatientExist=patientService.isPatientExistByUsername(request.getUsername());//To check patient already exist

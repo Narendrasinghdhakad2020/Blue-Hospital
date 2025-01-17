@@ -1,4 +1,4 @@
-package com.bluehospital.patient.patient.service;
+package com.bluehospital.patient.patient.service.common;
 
 public interface TokenBlacklistService {
 

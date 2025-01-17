@@ -1,11 +1,9 @@
-package com.bluehospital.patient.patient.service;
+package com.bluehospital.patient.patient.service.patient;
 
-import com.bluehospital.patient.patient.dto.ApiResponse;
-import com.bluehospital.patient.patient.dto.LoginRequest;
-import com.bluehospital.patient.patient.model.Patient;
-import io.jsonwebtoken.impl.crypto.MacProvider;
+import com.bluehospital.patient.patient.dto.common.ApiResponse;
+import com.bluehospital.patient.patient.dto.common.LoginRequest;
+import com.bluehospital.patient.patient.model.patient.Patient;
 import org.bson.types.ObjectId;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.Map;
