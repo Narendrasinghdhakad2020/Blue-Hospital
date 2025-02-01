@@ -15,14 +15,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory(){
-//        RedisStandaloneConfiguration config=new RedisStandaloneConfiguration();
-////        config.setHostName("red-ctufgptumphs73en6hq0");
-//        config.setPort(6379);
-//
-//        return new LettuceConnectionFactory(config);
-//    }
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory(){
+        RedisStandaloneConfiguration config=new RedisStandaloneConfiguration();
+//        config.setHostName("red-ctufgptumphs73en6hq0");
+        config.setPort(6379);
+
+        return new LettuceConnectionFactory(config);
+    }
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory){

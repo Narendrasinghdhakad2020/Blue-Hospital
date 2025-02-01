@@ -65,6 +65,7 @@ public class PatientAuth {
             newPatient.setPassword(encodedPassword);
             newPatient.setRole(request.getRole());
             newPatient.setPhone(request.getPhone());
+            newPatient.setGender(request.getGender());
             newPatient.setCreatedAt(new Date());
             patientService.savePatient(newPatient);
             logger.info("Signup-Controller: Patient Successfully saved to DB!");

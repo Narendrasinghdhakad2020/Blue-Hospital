@@ -3,14 +3,14 @@ spring:
     name: patient
 
   redis:
-#    host: red-ctufgptumphs73en6hq0
-    host: localhost
+    host: red-ctufgptumphs73en6hq0
+#    host: localhost
     port: 6379
-    ssl: false
+    ssl: true
 
   data:
     mongodb:
-      uri: mongodb+srv://singhdhakad2023:cWNeilwoQHYnJvmc@cluster0.blaph.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      uri: mongodb+srv://singhdhakad2023:22fWJD72Wq98PqhZ@cluster0.blaph.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       database: BlueHospital
       ssl:
         enable: true
@@ -29,7 +29,7 @@ spring:
             enable: true
 
 server:
-  port: 8081
+  port: 8080
 
 springdoc:
   swagger-ui:

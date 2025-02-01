@@ -1,12 +1,16 @@
 package com.bluehospital.patient.patient.dto.patient;
 
+import com.bluehospital.patient.patient.model.Gender;
+
 public class PatientSignupRequest {
+
 
     private String name;
     private String username;
     private String password;
     private String role;
     private String phone;
+    private Gender gender;
     //getters for above
 
     public String getName() {
@@ -27,5 +31,9 @@ public class PatientSignupRequest {
 
     public String getPhone() {
         return phone;
+    }
+
+    public Gender getGender() {
+        return gender;
     }
 }

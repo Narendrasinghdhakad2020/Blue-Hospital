@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/private/patient")
-public class TestToken {
+public class PatientPrivateRoute {
 
 
     @GetMapping("/test")

@@ -13,6 +13,10 @@ target/
 .springBeans
 .sts4-cache
 
+PrivateKey.pem
+spring-boot-app.tar
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

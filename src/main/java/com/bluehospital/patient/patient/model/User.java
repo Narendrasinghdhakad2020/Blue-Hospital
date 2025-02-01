@@ -25,6 +25,8 @@ public abstract class User {
     private Date updatedAt;
     private boolean isVerified;
     private String verificationCode;
+    private boolean profileCompleted = false; // Tracks if the profile is complete
+
 
 
     //getters and setters
@@ -95,5 +97,13 @@ public abstract class User {
 
     public void setVerificationCode(String verificationCode) {
         this.verificationCode = verificationCode;
+    }
+
+    public boolean isProfileCompleted() {
+        return profileCompleted;
+    }
+
+    public void setProfileCompleted(boolean profileCompleted) {
+        this.profileCompleted = profileCompleted;
     }
 }

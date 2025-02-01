@@ -13,7 +13,7 @@ WORKDIR /patient-app
 COPY target/spring-patient-app.jar patient-app.jar
 
 # Expose the application port (adjust as per your application)
-EXPOSE 8085
+EXPOSE 8080
 
 #run command to run the container
 ENTRYPOINT ["java" ,"-jar","patient-app.jar"]

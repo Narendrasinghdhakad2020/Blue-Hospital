@@ -1,5 +1,6 @@
 package com.bluehospital.patient.patient.model.patient;
 
+import com.bluehospital.patient.patient.model.Gender;
 import com.bluehospital.patient.patient.model.User;
 import com.mongodb.lang.NonNull;
 import org.bson.types.ObjectId;
@@ -15,8 +16,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
 @Document(collection = "patient")
 public class Patient extends User implements UserDetails {
+
+
 
     @Id
     protected String Id;
@@ -26,6 +31,10 @@ public class Patient extends User implements UserDetails {
 
     @NonNull
     private String phone;
+
+    @NonNull
+    private Gender gender;
+
 
     //getters and setters
 
@@ -55,6 +64,15 @@ public class Patient extends User implements UserDetails {
 
     public void setPhone(@NonNull String phone) {
         this.phone = phone;
+    }
+
+    @NonNull
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(@NonNull Gender gender) {
+        this.gender = gender;
     }
 
     @Override
