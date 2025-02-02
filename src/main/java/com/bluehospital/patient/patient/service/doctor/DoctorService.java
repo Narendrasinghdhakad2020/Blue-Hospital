@@ -11,4 +11,5 @@ public interface DoctorService {
 
     public Doctor addDoctor(String hospitalId, AddDoctorDTO doctorDTO); //service to add new doctors to hospital
     public List<Doctor> getDoctorsByHospital(String hospitalId); //service to find doctors of particular hospital
+    public Boolean checkDoctorExistByEmail(String email); //service to check doctor exist by email
 }

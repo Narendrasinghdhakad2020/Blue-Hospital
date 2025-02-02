@@ -29,33 +29,74 @@ public class AddDoctorDTO {
     @NotNull(message = "Available timing is required")
     private AvailableTiming availableTiming;
 
-    //getters
+    // ✅ Constructor
+    public AddDoctorDTO() {}
 
-    public @NotBlank(message = "Name is required") String getName() {
+    public AddDoctorDTO(String name, String email, String phone, Gender gender, String address, String specialty, AvailableTiming availableTiming) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.gender = gender;
+        this.address = address;
+        this.specialty = specialty;
+        this.availableTiming = availableTiming;
+    }
+
+    // ✅ Getters and Setters
+    public String getName() {
         return name;
     }
 
-    public @Email(message = "Invalid email format") String getEmail() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
         return email;
     }
 
-    public @NotBlank(message = "Phone number is required") @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number format") String getPhone() {
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
         return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Gender getGender() {
         return gender;
     }
 
-    public @NotBlank(message = "Address is required") String getAddress() {
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public String getAddress() {
         return address;
     }
 
-    public @NotBlank(message = "Specialty is required") String getSpecialty() {
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getSpecialty() {
         return specialty;
     }
 
-    public @NotNull(message = "Available timing is required") AvailableTiming getAvailableTiming() {
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
+    }
+
+    public AvailableTiming getAvailableTiming() {
         return availableTiming;
     }
+
+    public void setAvailableTiming(AvailableTiming availableTiming) {
+        this.availableTiming = availableTiming;
+    }
+
 }

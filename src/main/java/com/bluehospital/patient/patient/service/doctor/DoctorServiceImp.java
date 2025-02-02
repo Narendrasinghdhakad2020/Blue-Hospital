@@ -38,4 +38,14 @@ public class DoctorServiceImp implements DoctorService{
     public List<Doctor> getDoctorsByHospital(String hospitalId) {
         return doctorRepository.findDoctorsByHospitalId(hospitalId);
     }
+
+    //service to check existing doctor by email id
+    @Override
+    public Boolean checkDoctorExistByEmail(String email){
+        Doctor doctor=doctorRepository.findDoctorByEmail(email).orElse(null);
+        if(doctor==null){
+            return false;
+        }
+        return true;
+    }
 }

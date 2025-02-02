@@ -14,5 +14,6 @@ public interface DoctorRepository extends MongoRepository<Doctor, ObjectId> {
 
     public Optional<Doctor> findDoctorByName(String name);
     public Optional<Doctor> findDoctorById(ObjectId id);
+    public Optional<Doctor> findDoctorByEmail(String Email);
     public List<Doctor> findDoctorsByHospitalId(String id);
 }

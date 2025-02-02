@@ -35,6 +35,17 @@ public class DoctorAuth {
         if (!"hospital".equalsIgnoreCase(role)) {
             return ResponseEntity.status(403).body(null); // Forbidden
         }
+        Boolean isDoctorExist=doctorService.checkDoctorExistByEmail(doctorDTO.getEmail());
+        if(isDoctorExist){
+            ApiResponse<Doctor> response=new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Doctor Already Exist",
+                    "/api/v1/public/doctor/add",
+                    null
+            );
+            return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        }
+        doctorDTO.getAvailableTiming().validate(); // Validate available timing
 
         Doctor doctor = doctorService.addDoctor(hospitalId, doctorDTO);
         ApiResponse<Doctor> response=new ApiResponse<>(
