@@ -1,11 +1,10 @@
 package com.bluehospital.patient.patient.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class AvailableTiming {
+public class TimeFormat {
 
     private String startTime; // Store as String instead of LocalTime
     private String endTime;
@@ -13,9 +12,9 @@ public class AvailableTiming {
     @JsonIgnore
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public AvailableTiming() {}
+    public TimeFormat() {}
 
-    public AvailableTiming(LocalTime startTime, LocalTime endTime) {
+    public TimeFormat(LocalTime startTime, LocalTime endTime) {
         this.startTime = startTime.format(TIME_FORMATTER);
         this.endTime = endTime.format(TIME_FORMATTER);
     }

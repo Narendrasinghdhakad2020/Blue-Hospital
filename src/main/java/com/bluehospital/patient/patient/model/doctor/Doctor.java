@@ -1,8 +1,10 @@
 package com.bluehospital.patient.patient.model.doctor;
 
-import com.bluehospital.patient.patient.model.AvailableTiming;
+import com.bluehospital.patient.patient.model.TimeFormat;
 import com.bluehospital.patient.patient.model.Gender;
+import com.bluehospital.patient.patient.model.slot.Slot;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -18,7 +20,9 @@ public class Doctor {
     private String address;
     private String hospitalId;
     private String specialty;
-    private AvailableTiming availableTiming; // Updated to use LocalTime
+    @DBRef
+    private Slot slots;
+    private TimeFormat availableTiming; // Updated to use LocalTime
     private Date createdAt = new Date();
     private Date updatedAt = new Date();
 
@@ -56,6 +60,14 @@ public class Doctor {
         this.phone = phone;
     }
 
+    public Slot getSlots() {
+        return slots;
+    }
+
+    public void setSlots(Slot slots) {
+        this.slots = slots;
+    }
+
     public String getAddress() {
         return address;
     }
@@ -88,11 +100,11 @@ public class Doctor {
         this.specialty = specialty;
     }
 
-    public AvailableTiming getAvailableTiming() {
+    public TimeFormat getAvailableTiming() {
         return availableTiming;
     }
 
-    public void setAvailableTiming(AvailableTiming availableTiming) {
+    public void setAvailableTiming(TimeFormat availableTiming) {
         this.availableTiming = availableTiming;
     }
 

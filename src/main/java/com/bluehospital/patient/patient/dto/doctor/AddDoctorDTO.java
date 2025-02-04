@@ -1,6 +1,6 @@
 package com.bluehospital.patient.patient.dto.doctor;
 
-import com.bluehospital.patient.patient.model.AvailableTiming;
+import com.bluehospital.patient.patient.model.TimeFormat;
 import com.bluehospital.patient.patient.model.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -27,12 +27,12 @@ public class AddDoctorDTO {
     private String specialty;
 
     @NotNull(message = "Available timing is required")
-    private AvailableTiming availableTiming;
+    private TimeFormat availableTiming;
 
     // ✅ Constructor
     public AddDoctorDTO() {}
 
-    public AddDoctorDTO(String name, String email, String phone, Gender gender, String address, String specialty, AvailableTiming availableTiming) {
+    public AddDoctorDTO(String name, String email, String phone, Gender gender, String address, String specialty, TimeFormat availableTiming) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -91,11 +91,11 @@ public class AddDoctorDTO {
         this.specialty = specialty;
     }
 
-    public AvailableTiming getAvailableTiming() {
+    public TimeFormat getAvailableTiming() {
         return availableTiming;
     }
 
-    public void setAvailableTiming(AvailableTiming availableTiming) {
+    public void setAvailableTiming(TimeFormat availableTiming) {
         this.availableTiming = availableTiming;
     }
 
